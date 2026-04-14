@@ -1,0 +1,6 @@
+mistralai
+SpeechRecognition
+pyttsx3
+pyaudio
+pyautogui
+python-dotenv

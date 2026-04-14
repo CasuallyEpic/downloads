@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/**/*.ts",
+      "use": "@vercel/node",
+      "config": {
+        "maxLambdaSize": "50mb",
+        "includeFiles": "api/**"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api$",
+      "dest": "/api/index"
+    },
+    {
+      "src": "/(.*)",
+      "status": 404
+    }
+  ],
+  "env": {},
+  "git": {
+    "deploymentEnabled": {
+      "main": true
+    }
+  }
+}

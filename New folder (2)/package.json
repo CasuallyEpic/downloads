@@ -1,0 +1,22 @@
+{
+  "name": "api-service",
+  "version": "1.0.0",
+  "description": "Unlimited API service on Vercel",
+  "private": true,
+  "scripts": {
+    "start": "vercel dev --listen 3000",
+    "build": "tsc",
+    "deploy": "vercel deploy --prod"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.5",
+    "@types/cheerio": "^1.0.0",
+    "typescript": "^5.9.3",
+    "vercel": "^32.0.0"
+  },
+  "dependencies": {
+    "@vercel/node": "^5.6.11",
+    "cheerio": "^1.2.0",
+    "node-fetch": "^3.3.2"
+  }
+}

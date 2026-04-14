@@ -1,0 +1,18 @@
+# Ignore large binaries and archives
+*.exe
+*.zip
+*.7z
+*.iso
+*.msi
+*.dmg
+*.pkg
+*.bin
+
+# System files
+desktop.ini
+Thumbs.db
+
+# Media files (optional, but good to ignore if large)
+# *.mp4
+# *.mp3
+# *.wav

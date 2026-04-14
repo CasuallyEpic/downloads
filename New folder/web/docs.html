@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="/icon.png" type="image/png" />
+  <title id="page"></title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              200: '#ddd6fe',
+              300: '#c4b5fd',
+              400: '#a78bfa',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+              800: '#5b21b6',
+              900: '#4c1d95',
+              950: '#2e1065',
+            },
+            dark: {
+              950: '#09090b',
+              900: '#101014',
+              850: '#141418',
+              800: '#18181c',
+              700: '#1f1f23',
+              600: '#27272b',
+              500: '#2e2e32',
+              400: '#39393d',
+            },
+            accent: {
+              purple: '#9333ea',
+              pink: '#ec4899',
+              blue: '#3b82f6',
+              teal: '#14b8a6',
+            },
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            heading: ['Poppins', 'sans-serif'],
+          },
+          animation: {
+            'gradient-x': 'gradient-x 3s ease infinite',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+          },
+          keyframes: {
+            'gradient-x': {
+              '0%, 100%': {
+                'background-size': '200% 200%',
+                'background-position': 'left center'
+              },
+              '50%': {
+                'background-size': '200% 200%',
+                'background-position': 'right center'
+              },
+            },
+            'float': {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+          },
+          boxShadow: {
+            'glow': '0 0 15px rgba(139, 92, 246, 0.5)',
+            'glow-sm': '0 0 5px rgba(139, 92, 246, 0.3)',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    /* Custom scrollbar for Webkit browsers */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(139, 92, 246, 0.2);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(139, 92, 246, 0.5);
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .fadeIn {
+      animation: fadeIn 0.5s ease forwards;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .slideUp {
+      animation: slideUp 0.4s ease forwards;
+    }
+
+    /* Sidebar animations */
+    @keyframes slideInLeft {
+      from { transform: translateX(-100%); }
+      to { transform: translateX(0); }
+    }
+    .slideInLeft {
+      animation: slideInLeft 0.3s ease forwards;
+    }
+    @keyframes slideOutLeft {
+      from { transform: translateX(0); }
+      to { transform: translateX(-100%); }
+    }
+    .slideOutLeft {
+      animation: slideOutLeft 0.3s ease forwards;
+    }
+
+    /* Category animations */
+    .category-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+    .category-content.open {
+      max-height: 1000px; /* Arbitrary large value */
+    }
+    .category-arrow {
+      transition: transform 0.3s ease;
+    }
+    .category-arrow.open {
+      transform: rotate(90deg);
+    }
+
+    /* Unified separator styles */
+    .unified-separator {
+      height: 1px;
+      background: linear-gradient(90deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.3), rgba(139, 92, 246, 0.1));
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -1px;
+      transition: opacity 0.3s ease;
+    }
+    @media (min-width: 1024px) {
+      .unified-separator {
+        left: 320px;
+      }
+    }
+
+    /* Search animations */
+    #sidebarSearchContainer {
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    /* Search input focus styles */
+    #sidebarSearch:focus {
+      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
+    }
+
+    /* Card hover effects */
+    .card-hover {
+      transition: all 0.3s ease;
+      border: 1px solid rgba(139, 92, 246, 0.1);
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .card-hover::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.05) 0%, rgba(236, 72, 153, 0.05) 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: -1;
+    }
+
+    .card-hover:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      border-color: rgba(139, 92, 246, 0.5);
+    }
+
+    .card-hover:hover::before {
+      opacity: 1;
+    }
+
+    /* Gradient text */
+    .gradient-text {
+      background: linear-gradient(to right, #a78bfa, #ec4899);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* Hide navbar header title initially */
+    #header {
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    /* Hide online badge on the header initially */
+    #versionHeader {
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    /* Gradient borders */
+    .gradient-border {
+      position: relative;
+      border-radius: 0.75rem;
+      background-clip: padding-box;
+      z-index: 0;
+    }
+    .gradient-border::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      right: -1px;
+      bottom: -1px;
+      left: -1px;
+      z-index: -1;
+      border-radius: inherit;
+      background: linear-gradient(135deg, #9333ea, #ec4899);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .gradient-border:hover::before {
+      opacity: 1;
+    }
+
+    /* Gradient background */
+    .gradient-bg {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+    }
+
+    /* Animated background */
+    .animated-bg {
+      background: linear-gradient(270deg, #18181c, #27272b);
+      background-size: 200% 200%;
+      animation: gradient-x 3s ease infinite;
+    }
+
+    /* Glass effect */
+    .glass-effect {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(24, 24, 28, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Button styles */
+    .gradient-button {
+      background: linear-gradient(to right, #9333ea, #ec4899);
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+
+    .gradient-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to right, #7c3aed, #db2777);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      border-radius: inherit;
+      z-index: -1;
+    }
+
+    .gradient-button:hover::before {
+      opacity: 1;
+    }
+
+    /* Pulse effect for badges */
+    .pulse-badge {
+      position: relative;
+    }
+
+    .pulse-badge::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      box-shadow: 0 0 0 0 rgba(147, 51, 234, 0.7);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(147, 51, 234, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(147, 51, 234, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(147, 51, 234, 0);
+      }
+    }
+
+    /* Method badge styles */
+    .method-badge {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .method-badge::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+      transition: left 0.5s ease;
+    }
+
+    .method-badge:hover::before {
+      left: 100%;
+    }
+
+    #loadingBar {
+      animation: shimmer 2s linear infinite;
+      background-size: 200% 100%;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 100% 0;
+      }
+      100% {
+        background-position: -100% 0;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-dark-950 via-dark-900 to-dark-850 text-gray-200 font-sans min-h-screen relative transition-colors duration-300">
+  <!-- Loading Screen -->
+  <div id="loadingScreen" class="fixed inset-0 bg-dark-950 z-50 flex flex-col items-center justify-center transition-colors duration-300">
+    <div class="relative w-64 h-2 bg-dark-700 rounded-full overflow-hidden mb-4">
+      <div id="loadingBar" class="absolute left-0 top-0 h-full w-0 bg-gradient-to-r from-primary-600 to-accent-pink rounded-full transition-all duration-1000 ease-out"></div>
+    </div>
+    <p class="text-primary-400 text-xl font-medium font-heading">Loading dashboard...</p>
+  </div>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebarOverlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 hidden lg:hidden"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed top-0 left-0 h-full w-80 bg-dark-800/95 backdrop-blur-md border-r border-dark-600/50 z-50 transform -translate-x-full lg:translate-x-0 transition-all duration-300 shadow-xl">
+    <div class="flex flex-col h-full">
+      <!-- Sidebar Header -->
+      <div class="h-16 flex items-center justify-between px-6 relative">
+        <a href="#" class="flex items-center">
+          <span id="sidebarHeader" class="text-xl font-semibold gradient-text font-heading"></span>
+          <div id="sidebarVersion" class="ml-2 bg-primary-900/50 text-primary-300 px-2 py-0.5 text-xs rounded-full"></div>
+        </a>
+        <!-- Sidebar search toggle -->
+        <button id="sidebarSearchToggle" class="p-2 rounded-full hover:bg-dark-600 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </button>
+        <div id="sidebarSearchContainer" class="absolute inset-x-0 top-0 h-16 bg-dark-800 flex items-center px-4 hidden">
+          <div class="relative w-full flex items-center">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input type="text" id="sidebarSearch" class="w-full h-10 pl-10 pr-10 py-2 bg-dark-600 border-0 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:outline-none transition-all" placeholder="Search APIs...">
+            <button id="sidebarSearchClear" class="absolute right-2 p-2 rounded-full text-gray-400 hover:text-gray-200 hidden">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <button id="sidebarSearchCancel" class="ml-4 text-white font-medium">Cancel</button>
+        </div>
+        <div class="unified-separator"></div>
+      </div>
+      <!-- Sidebar Categories -->
+      <div id="sidebarCategories" class="flex-1 overflow-y-auto px-4 mt-4 pb-6"></div>
+    </div>
+  </aside>
+
+  <!-- Navbar -->
+  <nav id="navbar" class="fixed top-0 inset-x-0 z-30 transition-all duration-300">
+    <div class="container mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center">
+        <button id="sidebarToggle" class="p-2 mr-4 rounded-full hover:bg-dark-700 transition-colors lg:hidden">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <a href="#" class="flex items-center" id="navbarBrand">
+          <span id="header" class="text-xl font-semibold mr-2 gradient-text font-heading"></span>
+          <div id="versionHeader" class="bg-primary-900/50 text-primary-300 px-3 py-1 text-xs rounded-full"></div>
+        </a>
+      </div>
+      <div class="flex items-center">
+        <button id="notificationToggle" class="p-2 rounded-full hover:bg-dark-700 transition-colors relative">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+          <span id="notificationBadge" class="absolute top-0 right-0 bg-gradient-to-r from-accent-purple to-accent-pink text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden pulse-badge">0</span>
+        </button>
+      </div>
+    </div>
+    <div id="navbarSeparator" class="unified-separator opacity-0"></div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="lg:ml-80 transition-all duration-300">
+    <div class="h-16"></div>
+    <div class="container mx-auto px-6 py-8">
+      <!-- Header Banner -->
+      <div class="flex flex-col items-center mb-12 fadeIn">
+        <div class="w-full flex justify-center mb-6">
+          <img id="dynamicImage" class="rounded-xl max-w-full lg:max-w-md h-auto object-cover shadow-lg ring-1 ring-white/10" src="/placeholder.svg" alt="Dashboard banner">
+        </div>
+        <div class="flex-1 text-center slideUp" style="animation-delay: 0.2s;">
+          <div class="flex flex-wrap items-center justify-center gap-3 mb-3">
+            <h1 id="name" class="text-3xl font-bold gradient-text font-heading"></h1>
+            <div id="version" class="bg-gradient-to-r from-primary-900/50 to-primary-800/50 text-primary-300 px-3 py-1 text-xs rounded-full border border-primary-700/30"></div>
+          </div>
+          <p id="description" class="text-gray-400 text-lg mb-4"></p>
+          <div id="headerStatus" class="text-sm text-green-400 font-medium mb-6 flex items-center justify-center">
+            <span class="inline-block w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+            <span id="headerStatusText"></span>
+          </div>
+          <div id="apiLinks" class="flex flex-wrap gap-4 justify-center"></div>
+        </div>
+      </div>
+      <!-- Dashboard Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 slideUp" style="animation-delay: 0.3s;">
+        <!-- Total APIs Card -->
+        <div class="bg-dark-700 rounded-xl p-6 shadow-lg card-hover gradient-border">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-medium font-heading">Total APIs</h3>
+            <div class="p-2 bg-primary-900/30 rounded-md">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+          </div>
+          <div class="flex items-end">
+            <span id="totalApis" class="text-3xl font-bold">0</span>
+            <span class="text-gray-400 ml-2 mb-1">endpoints</span>
+          </div>
+        </div>
+        <!-- Categories Card -->
+        <div class="bg-dark-700 rounded-xl p-6 shadow-lg card-hover gradient-border">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-medium font-heading">Categories</h3>
+            <div class="p-2 bg-green-900/30 rounded-md">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+            </div>
+          </div>
+          <div class="flex items-end">
+            <span id="totalCategories" class="text-3xl font-bold">0</span>
+            <span class="text-gray-400 ml-2 mb-1">groups</span>
+          </div>
+        </div>
+        <!-- GET Endpoints Card -->
+        <div class="bg-dark-700 rounded-xl p-6 shadow-lg card-hover gradient-border">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-medium font-heading">GET Endpoints</h3>
+            <div class="p-2 bg-blue-900/30 rounded-md">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+            </div>
+          </div>
+          <div class="flex items-end">
+            <span id="getEndpoints" class="text-3xl font-bold">0</span>
+            <span class="text-gray-400 ml-2 mb-1">endpoints</span>
+          </div>
+        </div>
+        <!-- POST Endpoints Card -->
+        <div class="bg-dark-700 rounded-xl p-6 shadow-lg card-hover gradient-border">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-medium font-heading">POST Endpoints</h3>
+            <div class="p-2 bg-amber-900/30 rounded-md">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+            </div>
+          </div>
+          <div class="flex items-end">
+            <span id="postEndpoints" class="text-3xl font-bold">0</span>
+            <span class="text-gray-400 ml-2 mb-1">endpoints</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- API Response Modal -->
+  <div id="apiResponseModal" class="fixed inset-0 z-50 bg-black/70 hidden overflow-y-auto backdrop-blur-sm" aria-labelledby="apiResponseModalLabel" aria-modal="true">
+    <div class="min-h-screen flex items-center justify-center p-4">
+      <div class="bg-dark-800 border border-dark-600/50 rounded-xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-xl">
+        <!-- Modal Header -->
+        <div class="flex justify-between items-start p-6 border-b border-dark-600/50 bg-gradient-to-r from-dark-800 to-dark-700 rounded-t-xl">
+          <div>
+            <h3 class="text-xl font-semibold gradient-text font-heading" id="apiResponseModalLabel"></h3>
+            <p class="text-gray-400 text-sm mt-1" id="apiResponseModalDesc"></p>
+          </div>
+          <button type="button" id="closeModalBtn" class="text-gray-400 hover:text-gray-200 p-2 rounded-lg hover:bg-dark-600 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            <span class="sr-only">Close</span>
+          </button>
+        </div>
+        <!-- Modal Body -->
+        <div class="p-6 overflow-y-auto flex-1">
+          <pre id="apiEndpoint" class="bg-dark-900 rounded-lg p-4 text-gray-300 text-sm overflow-x-auto mb-4 font-mono hidden border border-dark-600/50"></pre>
+          <div id="apiQueryInputContainer" class="space-y-4"></div>
+          <div id="apiResponseLoading" class="hidden py-12 flex justify-center">
+            <div class="relative w-12 h-12">
+              <div class="absolute inset-0 border-4 border-primary-800/50 border-t-primary-400 rounded-full animate-spin"></div>
+            </div>
+          </div>
+          <pre id="apiResponseContent" class="hidden bg-dark-900 rounded-lg p-4 text-gray-300 mt-4 text-sm overflow-x-auto font-mono border border-dark-600/50"></pre>
+        </div>
+        <!-- Modal Footer -->
+        <div class="p-6 border-t border-dark-600/50 bg-gradient-to-r from-dark-800 to-dark-700 rounded-b-xl">
+          <button id="submitQueryBtn" class="hidden px-6 py-2.5 gradient-button text-white font-medium rounded-lg transition-all shadow-lg hover:shadow-primary-500/20">
+            Submit
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Pop-up -->
+  <div id="notificationPopup" class="fixed top-20 right-4 z-50 w-80 bg-dark-800 border border-dark-600/50 rounded-lg shadow-lg hidden glass-effect">
+    <div class="p-4">
+      <h3 class="text-lg font-semibold mb-2 font-heading">Notifications</h3>
+      <div id="notificationList" class="space-y-2 max-h-[300px] overflow-y-auto"></div>
+    </div>
+  </div>
+
+  <script>
+  // Loading animation
+  function animateLoading() {
+    const loadingBar = document.getElementById('loadingBar');
+    let width = 0;
+    const interval = setInterval(() => {
+      if (width >= 100) {
+        clearInterval(interval);
+      } else {
+        width++;
+        loadingBar.style.width = width + '%';
+      }
+    }, 20);
+  }
+
+  window.addEventListener('load', animateLoading);
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    // Sidebar elements and helpers
+    const loadingScreen = document.getElementById("loadingScreen");
+    const capitalizeFirstLetter = str => str ? str.charAt(0).toUpperCase() + str.slice(1) : str;
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const sidebarSearchContainer = document.getElementById('sidebarSearchContainer');
+    const sidebarSearchToggle = document.getElementById('sidebarSearchToggle');
+    const sidebarSearch = document.getElementById('sidebarSearch');
+    const sidebarSearchClear = document.getElementById('sidebarSearchClear');
+    const navbar = document.getElementById('navbar');
+    const navbarSeparator = document.getElementById('navbarSeparator');
+
+    // Notification elements
+    const notificationToggle = document.getElementById('notificationToggle');
+    const notificationBadge = document.getElementById('notificationBadge');
+    const notificationPopup = document.getElementById('notificationPopup');
+    const notificationList = document.getElementById('notificationList');
+
+    const sidebarSearchCancel = document.getElementById('sidebarSearchCancel');
+    sidebarSearchCancel.addEventListener('click', () => {
+      toggleSearch();
+      sidebarSearch.value = '';
+      sidebarSearch.dispatchEvent(new Event('input'));
+    });
+
+    function resetSidebar() {
+      sidebarSearchContainer.classList.add('hidden');
+      sidebarSearchToggle.classList.remove('hidden');
+      sidebarSearch.value = '';
+      sidebarSearchClear.classList.add('hidden');
+      sidebarSearch.dispatchEvent(new Event('input'));
+
+      const categoryContents = document.querySelectorAll('.category-content');
+      categoryContents.forEach(content => content.classList.remove('open'));
+      const categoryHeaders = document.querySelectorAll('#sidebarCategories button');
+      categoryHeaders.forEach(header => {
+        const arrow = header.querySelector('.category-arrow');
+        if (arrow) arrow.classList.remove('open');
+        if (header.parentElement) header.parentElement.style.display = '';
+      });
+    }
+
+    const toggleSidebar = () => {
+      const isOpen = !sidebar.classList.contains('-translate-x-full');
+      if (isOpen) {
+        sidebar.classList.add('-translate-x-full');
+        sidebarOverlay.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+        resetSidebar();
+      } else {
+        sidebar.classList.remove('-translate-x-full');
+        sidebarOverlay.classList.remove('hidden');
+        if (window.innerWidth < 1024) document.body.classList.add('overflow-hidden');
+      }
+    };
+
+    sidebarToggle.addEventListener('click', toggleSidebar);
+    sidebarOverlay.addEventListener('click', toggleSidebar);
+
+    const toggleSearch = () => {
+      const isVisible = !sidebarSearchContainer.classList.contains('hidden');
+      if (isVisible) {
+        sidebarSearchContainer.style.opacity = '0';
+        sidebarSearchContainer.style.transform = 'translateY(-10px)';
+        setTimeout(() => {
+          sidebarSearchContainer.classList.add('hidden');
+          sidebarSearchToggle.classList.remove('hidden');
+          sidebarSearchContainer.style.opacity = '';
+          sidebarSearchContainer.style.transform = '';
+        }, 200);
+      } else {
+        sidebarSearchContainer.classList.remove('hidden');
+        sidebarSearchToggle.classList.add('hidden');
+        sidebarSearchContainer.style.opacity = '0';
+        sidebarSearchContainer.style.transform = 'translateY(-10px)';
+        setTimeout(() => {
+          sidebarSearchContainer.style.opacity = '1';
+          sidebarSearchContainer.style.transform = 'translateY(0)';
+          sidebarSearchContainer.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+          sidebarSearch.focus();
+        }, 10);
+      }
+    };
+
+    sidebarSearchToggle.addEventListener('click', toggleSearch);
+
+    sidebarSearchClear.addEventListener('click', () => {
+      sidebarSearch.value = '';
+      sidebarSearch.dispatchEvent(new Event('input'));
+      sidebarSearch.focus();
+      sidebarSearchClear.classList.add('hidden');
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        if (sidebarSearchContainer.classList.contains('hidden')) toggleSearch();
+        sidebarSearch.focus();
+      }
+      if (e.key === 'Escape' && !sidebarSearchContainer.classList.contains('hidden')) {
+        toggleSearch();
+        sidebarSearch.value = '';
+        sidebarSearch.dispatchEvent(new Event('input'));
+      }
+    });
+
+    sidebarSearch.addEventListener('input', () => {
+      const searchTerm = sidebarSearch.value.toLowerCase();
+      const apiItems = document.querySelectorAll('.sidebar-api-item');
+      const categoryHeaders = document.querySelectorAll('#sidebarCategories button');
+
+      if (searchTerm.length > 0) {
+        sidebarSearchClear.classList.remove('hidden');
+      } else {
+        sidebarSearchClear.classList.add('hidden');
+      }
+
+      apiItems.forEach(item => {
+        const name = item.dataset.apiName.toLowerCase();
+        const desc = item.dataset.apiDesc.toLowerCase();
+        if (name.includes(searchTerm) || desc.includes(searchTerm)) {
+          item.style.display = '';
+          const categoryContent = item.closest('.category-content');
+          if (categoryContent && !categoryContent.classList.contains('open')) {
+            categoryContent.classList.add('open');
+            const categoryHeader = document.querySelector(`#sidebarCategories [data-target="${categoryContent.id}"]`);
+            if (categoryHeader) {
+              const arrow = categoryHeader.querySelector('.category-arrow');
+              if (arrow) {
+                arrow.classList.add('open');
+              }
+            }
+          }
+        } else {
+          item.style.display = 'none';
+        }
+      });
+      categoryHeaders.forEach(header => {
+        const categoryId = header.dataset.target;
+        const content = document.getElementById(categoryId);
+        const visibleItems = Array.from(content.querySelectorAll('.sidebar-api-item')).filter(item => item.style.display !== 'none');
+        const countEl = header.querySelector('span:last-child');
+        if (countEl) countEl.textContent = `(${visibleItems.length})`;
+        header.parentElement.style.display = visibleItems.length === 0 && searchTerm ? 'none' : '';
+      });
+    });
+
+    document.addEventListener('click', event => {
+      const apiItem = event.target.closest('.sidebar-api-item');
+      if (apiItem) handleApiClick(apiItem.dataset);
+    });
+
+    function handleApiClick(dataset) {
+      const { apiPath, apiName, apiDesc, apiAuthor, apiMethod } = dataset;
+      const method = apiMethod ? apiMethod.toLowerCase() : 'get';
+      const modal = document.getElementById('apiResponseModal');
+      modal.classList.remove('hidden');
+      const modalRefs = {
+        label: document.getElementById('apiResponseModalLabel'),
+        desc: document.getElementById('apiResponseModalDesc'),
+        content: document.getElementById('apiResponseContent'),
+        endpoint: document.getElementById('apiEndpoint'),
+        spinner: document.getElementById('apiResponseLoading'),
+        queryInputContainer: document.getElementById('apiQueryInputContainer'),
+        submitBtn: document.getElementById('submitQueryBtn')
+      };
+      modalRefs.label.textContent = capitalizeFirstLetter(apiName);
+      const capitalizedAuthor = apiAuthor ? `by ${capitalizeFirstLetter(apiAuthor)}` : '';
+      modalRefs.desc.textContent = `${capitalizeFirstLetter(apiDesc)} ${capitalizedAuthor}`;
+      modalRefs.content.textContent = '';
+      modalRefs.endpoint.textContent = '';
+      modalRefs.spinner.classList.add('hidden');
+      modalRefs.content.classList.add('hidden');
+      modalRefs.endpoint.classList.add('hidden');
+      modalRefs.queryInputContainer.innerHTML = '';
+      modalRefs.submitBtn.classList.add('hidden');
+
+      let baseApiUrl = `${window.location.origin}${apiPath.split('?')[0]}`;
+      let paramsString = apiPath.split('?')[1] || '';
+      let params = new URLSearchParams(paramsString);
+      let hasParams = params.toString().length > 0;
+
+      if (hasParams) {
+        const paramContainer = document.createElement('div');
+        paramContainer.className = 'space-y-4';
+        Array.from(params.keys()).forEach(param => {
+          const inputGroup = document.createElement('div');
+          inputGroup.className = 'flex flex-col';
+          const label = document.createElement('label');
+          label.htmlFor = `param-${param}`;
+          label.className = 'text-gray-300 mb-2 font-medium';
+          label.textContent = capitalizeFirstLetter(param);
+          const inputField = document.createElement('input');
+          inputField.type = 'text';
+          inputField.id = `param-${param}`;
+          inputField.className = 'bg-dark-600 border border-dark-500 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all';
+          inputField.placeholder = `Enter ${param}...`;
+          inputField.dataset.param = param;
+          inputField.required = true;
+          inputField.addEventListener('input', () => {
+            if (!inputField.value.trim()) {
+              inputField.classList.add('border-red-500', 'ring-1', 'ring-red-500');
+            } else {
+              inputField.classList.remove('border-red-500', 'ring-1', 'ring-red-500');
+            }
+            validateInputs();
+          });
+          inputGroup.appendChild(label);
+          inputGroup.appendChild(inputField);
+          paramContainer.appendChild(inputGroup);
+        });
+        modalRefs.queryInputContainer.appendChild(paramContainer);
+        modalRefs.submitBtn.classList.remove('hidden');
+        modalRefs.submitBtn.disabled = true;
+        modalRefs.submitBtn.onclick = async () => {
+          const inputs = modalRefs.queryInputContainer.querySelectorAll('input');
+          let isValid = true;
+          const data = {};
+          inputs.forEach(input => {
+            if (!input.value.trim()) {
+              isValid = false;
+              input.classList.add('border-red-500', 'ring-1', 'ring-red-500');
+            } else {
+              input.classList.remove('border-red-500', 'ring-1', 'ring-red-500');
+              data[input.dataset.param] = input.value.trim();
+            }
+          });
+          if (!isValid) return;
+          modalRefs.queryInputContainer.innerHTML = '';
+          modalRefs.submitBtn.classList.add('hidden');
+          if (method === 'get') {
+            const newParams = new URLSearchParams(data);
+            const apiUrlWithParams = `${baseApiUrl}?${newParams.toString()}`;
+            handleApiRequest(apiUrlWithParams, modalRefs, apiName, 'get');
+          } else if (method === 'post') {
+            handleApiRequest(baseApiUrl, modalRefs, apiName, 'post', data);
+          }
+        };
+      } else {
+        handleApiRequest(baseApiUrl, modalRefs, apiName, method);
+      }
+    }
+
+    function validateInputs() {
+      const submitBtn = document.getElementById('submitQueryBtn');
+      const inputs = document.querySelectorAll('#apiQueryInputContainer input');
+      const isValid = Array.from(inputs).every(input => input.value.trim() !== '');
+      submitBtn.disabled = !isValid;
+      if (isValid) {
+        submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      } else {
+        submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      }
+    }
+
+    async function handleApiRequest(apiUrl, modalRefs, apiName, method = 'get', bodyData = null) {
+      modalRefs.spinner.classList.remove('hidden');
+      modalRefs.content.classList.add('hidden');
+      try {
+        const options = {};
+        if (method === 'post') {
+          options.method = 'POST';
+          options.headers = { 'Content-Type': 'application/json' };
+          if (bodyData) options.body = JSON.stringify(bodyData);
+        }
+        const response = await fetch(apiUrl, options);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const contentType = response.headers.get('Content-Type');
+        if (contentType && contentType.startsWith('image/')) {
+          const blob = await response.blob();
+          const imageUrl = URL.createObjectURL(blob);
+          const img = document.createElement('img');
+          img.src = imageUrl;
+          img.alt = apiName;
+          img.className = 'max-w-full h-auto rounded-lg';
+          modalRefs.content.innerHTML = '';
+          modalRefs.content.appendChild(img);
+        } else {
+          const data = await response.json();
+          const formattedJson = JSON.stringify(data, null, 2);
+          modalRefs.content.textContent = formattedJson;
+          modalRefs.content.innerHTML = formattedJson.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+            let cls = 'text-amber-300';
+            if (/^"/.test(match)) {
+              cls = /:$/.test(match) ? 'text-primary-300' : 'text-green-300';
+            } else if (/true|false/.test(match)) {
+              cls = 'text-blue-300';
+            } else if (/null/.test(match)) {
+              cls = 'text-red-300';
+            }
+            return '<span class="' + cls + '">' + match + '</span>';
+          });
+        }
+        modalRefs.endpoint.textContent = apiUrl;
+        modalRefs.endpoint.classList.remove('hidden');
+      } catch (error) {
+        modalRefs.content.textContent = `Error: ${error.message}`;
+        modalRefs.content.classList.add('text-red-400');
+      } finally {
+        modalRefs.spinner.classList.add('hidden');
+        modalRefs.content.classList.remove('hidden');
+      }
+    }
+
+    document.getElementById('closeModalBtn').addEventListener('click', () => {
+      document.getElementById('apiResponseModal').classList.add('hidden');
+    });
+
+    notificationToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      notificationPopup.classList.toggle('hidden');
+      renderNotifications();
+    });
+    notificationPopup.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+    document.addEventListener('click', (e) => {
+      if (!notificationPopup.contains(e.target) && e.target !== notificationToggle) {
+        notificationPopup.classList.add('hidden');
+      }
+    });
+
+    function updateNavbarAppearance() {
+      const headerTitle = document.getElementById('header');
+      const headerBadge = document.getElementById('versionHeader');
+      if (window.scrollY > 0) {
+        navbar.classList.add('bg-dark-800/80', 'backdrop-blur-md', 'shadow-lg');
+        navbarSeparator.classList.remove('opacity-0');
+        headerTitle.style.opacity = '1';
+        headerBadge.style.opacity = '1';
+      } else {
+        navbar.classList.remove('bg-dark-800/80', 'backdrop-blur-md', 'shadow-lg');
+        navbarSeparator.classList.add('opacity-0');
+        headerTitle.style.opacity = '0';
+        headerBadge.style.opacity = '0';
+      }
+    }
+
+    window.addEventListener('scroll', updateNavbarAppearance);
+    updateNavbarAppearance();
+
+    let notifications = [];
+    const STORAGE_KEY = 'dashboard_notifications';
+
+    function loadNotifications() {
+      const savedNotifications = localStorage.getItem(STORAGE_KEY);
+      if (savedNotifications) {
+        try {
+          return JSON.parse(savedNotifications);
+        } catch (e) {
+          console.error('Error parsing saved notifications:', e);
+          return [];
+        }
+      }
+      return [];
+    }
+
+    function saveNotifications() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(notifications));
+    }
+
+    function updateNotificationBadge() {
+      const unreadCount = notifications.filter(n => !n.read).length;
+      if (unreadCount > 0) {
+        notificationBadge.textContent = unreadCount;
+        notificationBadge.classList.remove('hidden');
+      } else {
+        notificationBadge.classList.add('hidden');
+      }
+    }
+
+    function renderNotifications() {
+      notificationList.innerHTML = '';
+      if (notifications.length === 0) {
+        notificationList.innerHTML = '<div class="p-3 text-gray-400 text-center">No notifications</div>';
+        return;
+      }
+      notifications.forEach((notification, index) => {
+        const notificationEl = document.createElement('div');
+        notificationEl.className = `p-3 ${notification.read ? 'bg-dark-700' : 'bg-gradient-to-r from-dark-700 to-dark-600'} rounded-md transition-all hover:bg-dark-600 cursor-pointer`;
+        notificationEl.innerHTML = `
+          <div class="flex items-start">
+            <div class="flex-shrink-0 mr-3">
+              <div class="w-2 h-2 mt-1.5 rounded-full ${notification.read ? 'bg-gray-500' : 'bg-primary-400 animate-pulse'}"></div>
+            </div>
+            <div class="flex-1">
+              <h4 class="font-semibold">${notification.title}</h4>
+              <p class="text-sm text-gray-400">${notification.message}</p>
+            </div>
+          </div>
+        `;
+        notificationEl.addEventListener('click', () => {
+          notifications[index].read = true;
+          saveNotifications();
+          updateNotificationBadge();
+          renderNotifications();
+        });
+        notificationList.appendChild(notificationEl);
+      });
+    }
+
+    try {
+      const settings = await fetch('/settings.json').then(res => res.json());
+      const apiInfo = await fetch('/api/info').then(res => res.json());
+      const setContent = (id, property, value) => {
+        const element = document.getElementById(id);
+        if (element) {
+          if (property === 'textContent' && (id === 'header' || id === 'sidebarHeader' || id === 'name')) {
+            element.textContent = value;
+            element.classList.add('gradient-text');
+          } else {
+            element[property] = value;
+          }
+        }
+      };
+
+      const dynamicImage = document.getElementById('dynamicImage');
+      if (dynamicImage && settings.header && settings.header.imageSrc) {
+        let imageSrc = settings.header.imageSrc;
+        if (Array.isArray(imageSrc)) {
+          imageSrc = imageSrc[Math.floor(Math.random() * imageSrc.length)];
+        }
+        dynamicImage.src = imageSrc;
+        dynamicImage.alt = settings.name || "Dashboard";
+        const setImageSize = () => {
+          const screenWidth = window.innerWidth;
+          if (screenWidth < 768) {
+            dynamicImage.classList.add('max-w-[80%]');
+            dynamicImage.classList.remove('max-w-sm', 'max-w-md');
+          } else if (screenWidth < 1200) {
+            dynamicImage.classList.add('max-w-sm');
+            dynamicImage.classList.remove('max-w-[80%]', 'max-w-md');
+          } else {
+            dynamicImage.classList.add('max-w-md');
+            dynamicImage.classList.remove('max-w-[80%]', 'max-w-sm');
+          }
+        };
+        setImageSize();
+        window.addEventListener('resize', setImageSize);
+      }
+
+      setContent('page', 'textContent', settings.name || "API Dashboard");
+      setContent('header', 'textContent', settings.name || "API Dashboard");
+      setContent('name', 'textContent', settings.name || "API Dashboard");
+      setContent('version', 'textContent', settings.version || "v1.0 Beta");
+      setContent('versionHeader', 'textContent', settings.header.status || "Online!");
+      setContent('description', 'textContent', settings.description || "Interactive API Explorer");
+      setContent('headerStatusText', 'textContent', settings.header.status || "Online!");
+      setContent('sidebarHeader', 'textContent', settings.name || "API Dashboard");
+      setContent('sidebarVersion', 'textContent', settings.version || "v1.0 Beta");
+
+      const apiLinksContainer = document.getElementById('apiLinks');
+      if (apiLinksContainer && settings.links?.length) {
+        settings.links.forEach(({ url, name }) => {
+          const link = document.createElement('a');
+          link.href = url;
+          link.textContent = name;
+          link.target = '_blank';
+          link.className = 'text-primary-400 hover:text-primary-300 transition-colors border border-dark-600 bg-dark-700 rounded-lg px-4 py-2 text-sm font-medium hover:bg-dark-600 hover:border-primary-500/50 hover:shadow-glow-sm';
+          apiLinksContainer.appendChild(link);
+        });
+      }
+
+      const savedNotifications = loadNotifications();
+      if (settings.notifications && Array.isArray(settings.notifications)) {
+        const notificationMap = new Map();
+        savedNotifications.forEach(n => {
+          notificationMap.set(n.title + n.message, n);
+        });
+        settings.notifications.forEach(n => {
+          const key = n.title + n.message;
+          if (notificationMap.has(key)) {
+            n.read = notificationMap.get(key).read;
+          } else {
+            n.read = false;
+          }
+          notificationMap.set(key, n);
+        });
+        notifications = Array.from(notificationMap.values());
+        saveNotifications();
+        updateNotificationBadge();
+      } else {
+        notifications = savedNotifications;
+        updateNotificationBadge();
+      }
+
+      const sortedCategories = apiInfo.categories.sort((a, b) => a.name.localeCompare(b.name));
+      let totalApis = 0, getEndpoints = 0, postEndpoints = 0;
+      sortedCategories.forEach(category => {
+        totalApis += category.items.length;
+        category.items.forEach(item => {
+          if (item.method.toLowerCase() === 'get') getEndpoints++;
+          if (item.method.toLowerCase() === 'post') postEndpoints++;
+        });
+      });
+      setContent('totalApis', 'textContent', totalApis);
+      setContent('totalCategories', 'textContent', sortedCategories.length);
+      setContent('getEndpoints', 'textContent', getEndpoints);
+      setContent('postEndpoints', 'textContent', postEndpoints);
+
+      const sidebarCategories = document.getElementById('sidebarCategories');
+      sortedCategories.forEach((category, categoryIndex) => {
+        const categoryId = `category-${categoryIndex}`;
+        const categoryEl = document.createElement('div');
+        categoryEl.className = 'mb-4';
+        const categoryHeader = document.createElement('button');
+        categoryHeader.className = 'w-full flex items-center justify-between p-2 rounded-md hover:bg-dark-600 transition-colors text-left';
+        categoryHeader.dataset.target = categoryId;
+        const capitalizedCategoryName = capitalizeFirstLetter(category.name);
+        categoryHeader.innerHTML = `
+          <div class="flex items-center">
+            <span class="font-medium">${capitalizedCategoryName}</span>
+            <span class="ml-2 text-xs text-gray-400">(${category.items.length})</span>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 category-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        `;
+        const categoryContent = document.createElement('div');
+        categoryContent.id = categoryId;
+        categoryContent.className = 'category-content pl-2';
+        const sortedItems = category.items.sort((a, b) => a.name.localeCompare(b.name));
+        sortedItems.forEach(item => {
+          const capitalizedName = capitalizeFirstLetter(item.name);
+          const methodColors = {
+            get: 'bg-green-900/50 text-green-300 border border-green-800/30',
+            post: 'bg-blue-900/50 text-blue-300 border border-blue-800/30',
+            put: 'bg-amber-900/50 text-amber-300 border border-amber-800/30',
+            delete: 'bg-red-900/50 text-red-300 border border-red-800/30',
+            patch: 'bg-purple-900/50 text-purple-300 border border-purple-800/30'
+          };
+          const method = item.method.toLowerCase();
+          const methodColor = methodColors[method] || 'bg-gray-800 text-gray-300 border border-gray-700/30';
+          const itemEl = document.createElement('div');
+          itemEl.className = 'py-2 px-2 my-1 hover:bg-dark-600 rounded-md transition-colors cursor-pointer sidebar-api-item';
+          itemEl.dataset.apiPath = item.path;
+          itemEl.dataset.apiName = item.name;
+          itemEl.dataset.apiDesc = item.desc;
+          itemEl.dataset.apiAuthor = item.author || '';
+          itemEl.dataset.apiMethod = method;
+          itemEl.innerHTML = `
+            <div class="flex items-center justify-between">
+              <span class="text-sm truncate">${capitalizedName}</span>
+              <span class="${methodColor} px-2 py-0.5 text-xs rounded uppercase method-badge">${method}</span>
+            </div>
+          `;
+          categoryContent.appendChild(itemEl);
+        });
+        categoryEl.appendChild(categoryHeader);
+        categoryEl.appendChild(categoryContent);
+        sidebarCategories.appendChild(categoryEl);
+        categoryHeader.addEventListener('click', () => {
+          const arrow = categoryHeader.querySelector('.category-arrow');
+          const content = document.getElementById(categoryId);
+          if (content.classList.contains('open')) {
+            content.classList.remove('open');
+            arrow.classList.remove('open');
+          } else {
+            content.classList.add('open');
+            arrow.classList.add('open');
+          }
+        });
+      });
+    } catch (error) {
+      console.error('Error loading settings or API info:', error);
+    } finally {
+      setTimeout(() => {
+        const loadingScreen = document.getElementById("loadingScreen");
+        loadingScreen.style.opacity = '0';
+        loadingScreen.style.transition = 'opacity 0.5s ease';
+        setTimeout(() => { loadingScreen.style.display = 'none'; }, 500);
+      }, 2000);
+    }
+  });
+  </script>
+</body>
+</html>
